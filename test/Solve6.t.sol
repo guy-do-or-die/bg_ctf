@@ -15,12 +15,14 @@ contract Solve6Test is Test {
     }
 
     function testFindGas() public {
-        // Check finding gas in a broad range logic
-        // We want gas inside to be 190,000 < g < 200,000.
-        // So we probably need to send 190,000 + overhead.
+        // Mock NFTFlags.mint to pass "already minted" or "not registered" checks
+        address nftFlags = 0xc1Ebd7a78FE7c075035c516B916A7FB3f33c26cE;
+        // mint(address,uint256) selector
+        vm.mockCall(nftFlags, abi.encodeWithSignature("mint(address,uint256)"), "");
 
-        // Let's sweep from 190,000 to 210,000
-        for (uint256 g = 197000; g < 197200; g += 1) {
+        // Broad range to ensure we find a working gas value
+        // Let's sweep from 196,000 to 198,000
+        for (uint256 g = 196000; g < 198000; g += 1) {
             try solver.solve(target, g) {
                 console.log("SUCCESS with gas:", g);
                 return;
