@@ -32,25 +32,22 @@ contract Solve12WithContract is Script {
 
     function run() external {
         address target = 0x8c7A3c2c44aB16f693d1731b10C271C7d2967769;
-        
+
         // Deterministic deployment
         bytes32 salt = keccak256("Solve12v2");
         address deployer = 0x4e59b44847b379578588920cA78FbF26c0B4956C; // Deterministic deployer
-        
-        bytes memory creationCode = abi.encodePacked(
-            type(Solver12).creationCode,
-            abi.encode(target)
-        );
-        
+
+        bytes memory creationCode = abi.encodePacked(type(Solver12).creationCode, abi.encode(target));
+
         address solverAddr = computeCreate2Address(salt, keccak256(creationCode), deployer);
         console.log("Solver Address:", solverAddr);
-        
+
         uint256 startBlock = IChallenge12(target).blockNumber(solverAddr);
         console.log("Stored Block:", startBlock);
         console.log("Current Block:", block.number);
 
         vm.startBroadcast();
-        
+
         Solver12 solver;
         if (solverAddr.code.length == 0) {
             console.log("Deploying Solver...");
@@ -62,7 +59,7 @@ contract Solve12WithContract is Script {
         } else {
             solver = Solver12(solverAddr);
         }
-        
+
         if (startBlock == 0 || block.number > startBlock + 250) {
             console.log("Resetting (Step 1)...");
             solver.step1();
@@ -70,17 +67,17 @@ contract Solve12WithContract is Script {
             vm.stopBroadcast();
             return;
         }
-        
+
         if (block.number < startBlock + 2) {
             console.log("Waiting...");
             vm.stopBroadcast();
             return;
         }
-        
+
         // Execute Step 2
         uint256 targetBlock = startBlock + 2;
         console.log("Executing Step 2 for target block:", targetBlock);
-        
+
         string[] memory cmd = new string[](6);
         cmd[0] = "cast";
         cmd[1] = "block";
@@ -88,10 +85,10 @@ contract Solve12WithContract is Script {
         cmd[3] = "--json";
         cmd[4] = "--rpc-url";
         cmd[5] = "https://mainnet.optimism.io";
-        
+
         bytes memory resBytes = vm.ffi(cmd);
         string memory jsonRes = string(resBytes);
-        
+
         BlockHeader memory h;
         h.parentHash = vm.parseJsonBytes32(jsonRes, ".parentHash");
         h.sha3Uncles = vm.parseJsonBytes32(jsonRes, ".sha3Uncles");
@@ -117,18 +114,18 @@ contract Solve12WithContract is Script {
 
         bytes memory fields = encodeHeader(h);
         bytes memory rlp = abi.encodePacked(encodeListLength(fields.length), fields);
-        
+
         bytes32 myHash = keccak256(rlp);
         bytes32 realHash = vm.parseJsonBytes32(jsonRes, ".hash");
         console.log("Calculated Hash:", vm.toString(myHash));
         console.log("Real Hash:      ", vm.toString(realHash));
-        
+
         if (myHash != realHash) {
             console.log("MISMATCH!");
         }
-        
+
         solver.step2(rlp);
-        
+
         vm.stopBroadcast();
     }
 
@@ -140,7 +137,7 @@ contract Solve12WithContract is Script {
             encodeBytes(abi.encodePacked(h.stateRoot)),
             encodeBytes(abi.encodePacked(h.transactionsRoot))
         );
-        
+
         bytes memory part2 = abi.encodePacked(
             encodeBytes(abi.encodePacked(h.receiptsRoot)),
             encodeBytes(h.logsBloom),
@@ -148,7 +145,7 @@ contract Solve12WithContract is Script {
             encodeUint(h.number),
             encodeUint(h.gasLimit)
         );
-        
+
         bytes memory part3 = abi.encodePacked(
             encodeUint(h.gasUsed),
             encodeUint(h.timestamp),
@@ -156,7 +153,7 @@ contract Solve12WithContract is Script {
             encodeBytes(abi.encodePacked(h.mixHash)),
             encodeBytes(abi.encodePacked(bytes8(h.nonce)))
         );
-        
+
         bytes memory part4 = abi.encodePacked(
             encodeUint(h.baseFeePerGas),
             encodeBytes(abi.encodePacked(h.withdrawalsRoot)),
@@ -168,20 +165,23 @@ contract Solve12WithContract is Script {
 
         return abi.encodePacked(part1, part2, part3, part4);
     }
-    
+
     // RLP Encoding Helpers
     function encodeListLength(uint256 len) internal pure returns (bytes memory) {
-         if (len <= 55) {
+        if (len <= 55) {
             return abi.encodePacked(uint8(0xc0 + len));
         } else {
             bytes memory bLength = toBytes(len);
             return abi.encodePacked(uint8(0xf7 + bLength.length), bLength);
         }
     }
+
     function encodeUint(uint256 x) internal pure returns (bytes memory) {
-        if (x == 0) return hex"80";
-        else if (x < 128) return abi.encodePacked(uint8(x));
-        else {
+        if (x == 0) {
+            return hex"80";
+        } else if (x < 128) {
+            return abi.encodePacked(uint8(x));
+        } else {
             bytes memory b = toBytes(x);
             return abi.encodePacked(uint8(0x80 + b.length), b);
         }
@@ -197,16 +197,16 @@ contract Solve12WithContract is Script {
             return abi.encodePacked(uint8(0xb7 + bLength.length), bLength, d);
         }
     }
-    
+
     function toBytes(uint256 x) internal pure returns (bytes memory b) {
         b = new bytes(32);
         assembly { mstore(add(b, 32), x) }
-        
+
         uint256 i;
         for (i = 0; i < 32; i++) {
             if (b[i] != 0) break;
         }
-        
+
         uint256 len = 32 - i;
         bytes memory res = new bytes(len);
         for (uint256 j = 0; j < len; j++) {

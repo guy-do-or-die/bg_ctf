@@ -13,7 +13,7 @@ contract CheckOwner is Script {
         address nftAddress = 0xc1Ebd7a78FE7c075035c516B916A7FB3f33c26cE;
         INFTFlags nft = INFTFlags(nftAddress);
         address me = 0x830bc5551e429DDbc4E9Ac78436f8Bf13Eca8434;
-        
+
         // Scan a reasonable range around known recent IDs (1560-1600)
         for (uint256 id = 1550; id < 1650; id++) {
             try nft.ownerOf(id) returns (address owner) {

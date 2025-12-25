@@ -17,7 +17,8 @@ contract Solver5 {
     }
 
     receive() external payable {
-        if (count < 15) { // Needs 10, go a bit higher to be safe
+        if (count < 15) {
+            // Needs 10, go a bit higher to be safe
             count++;
             challenge.claimPoints();
         }

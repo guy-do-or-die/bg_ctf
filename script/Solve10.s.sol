@@ -8,13 +8,13 @@ contract Solve10Script is Script {
     function run() external {
         address nftAddress = 0xc1Ebd7a78FE7c075035c516B916A7FB3f33c26cE;
         INFTFlags nft = INFTFlags(nftAddress);
-        
+
         // Sender from Challenge 4 logs: 0x830bc5551e429DDbc4E9Ac78436f8Bf13Eca8434
         address me = 0x830bc5551e429DDbc4E9Ac78436f8Bf13Eca8434;
 
         uint256 maxId = nft.tokenIdCounter();
         console.log("Total tokens:", maxId);
-        
+
         uint256 id1 = 0;
         uint256 id9 = 0;
 
@@ -23,7 +23,7 @@ contract Solve10Script is Script {
         uint256 start = maxId;
         uint256 stop = maxId > 2000 ? maxId - 2000 : 0;
 
-        for(uint256 i = start; i > stop; i--) {
+        for (uint256 i = start; i > stop; i--) {
             try nft.ownerOf(i) returns (address owner) {
                 if (owner == me) {
                     uint256 challengeId = nft.tokenIdToChallengeId(i);
@@ -35,7 +35,7 @@ contract Solve10Script is Script {
                     }
                 }
             } catch {}
-            
+
             if (id1 != 0 && id9 != 0) break;
         }
 

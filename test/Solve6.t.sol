@@ -18,16 +18,16 @@ contract Solve6Test is Test {
         // Check finding gas in a broad range logic
         // We want gas inside to be 190,000 < g < 200,000.
         // So we probably need to send 190,000 + overhead.
-        
+
         // Let's sweep from 190,000 to 210,000
         for (uint256 g = 197000; g < 197200; g += 1) {
             try solver.solve(target, g) {
                 console.log("SUCCESS with gas:", g);
                 return;
             } catch Error(string memory reason) {
-                 console.log("Failed with gas:", g, reason);
+                console.log("Failed with gas:", g, reason);
             } catch (bytes memory) {
-                 console.log("Failed with gas:", g, "unknown");
+                console.log("Failed with gas:", g, "unknown");
             }
         }
         revert("Could not find working gas");

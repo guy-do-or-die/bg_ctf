@@ -12,7 +12,7 @@ contract Solve9Script is Script {
         // Slot 0: nftContract (address)
         // Slot 1: password (bytes32)
         // Slot 2: count (uint256)
-        
+
         bytes32 password = vm.load(target, bytes32(uint256(1)));
         bytes32 countBytes = vm.load(target, bytes32(uint256(2)));
         uint256 count = uint256(countBytes);
@@ -20,7 +20,7 @@ contract Solve9Script is Script {
         // Calculate expected value
         // logic: bytes32 mask = ~(bytes32(uint256(0xFF) << ((31 - (count % 32)) * 8)));
         // bytes32 newPassword = password & mask;
-        
+
         bytes32 mask = ~(bytes32(uint256(0xFF) << ((31 - (count % 32)) * 8)));
         bytes32 solution = password & mask;
 

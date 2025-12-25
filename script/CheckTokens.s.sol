@@ -14,10 +14,10 @@ contract CheckTokens is Script {
         address nftAddress = 0xc1Ebd7a78FE7c075035c516B916A7FB3f33c26cE;
         INFTFlags nft = INFTFlags(nftAddress);
         address me = 0x830bc5551e429DDbc4E9Ac78436f8Bf13Eca8434;
-        
+
         uint256 bal = nft.balanceOf(me);
         console.log("Balance:", bal);
-        
+
         for (uint256 i = 0; i < bal; i++) {
             uint256 id = nft.tokenOfOwnerByIndex(me, i);
             uint256 challengeId = nft.tokenIdToChallengeId(id);

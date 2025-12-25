@@ -21,7 +21,7 @@ contract Solver6 {
             // call(gas, addr, value, argsOffset, argsLength, retOffset, retLength)
             // We use the passed _gasLimit explicitly.
             let result := call(_gasLimit, _target, 0, add(data, 0x20), mload(data), 0, 0)
-            
+
             if iszero(result) {
                 // If the call failed, revert to bubble up the error (useful for debugging)
                 returndatacopy(0, 0, returndatasize())
