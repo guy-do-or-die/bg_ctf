@@ -11,7 +11,7 @@ contract SolverS2C4 {
     receive() external payable {
         // If we receive a call with 0 value (the callback), send 1 gwei back
         if (msg.value == 0) {
-            (bool ok, ) = msg.sender.call{value: 1 gwei}("");
+            (bool ok,) = msg.sender.call{value: 1 gwei}("");
             require(ok, "failed to pay back");
         }
     }

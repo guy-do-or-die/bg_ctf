@@ -44,46 +44,46 @@ contract SolverS2C12 {
         // Start from 1 ether (10^18) because mintFlag pulls 1 ether via transferFrom.
         // And presumably allowance must equal inventory.
         // 1 ether is 1000000000000000000. All digits are <= 4. Valid.
-        
+
         uint256 start = 1000000000000000000;
-        
+
         // Iterate to find a valid inventory
         uint256 candidate = start;
         for (uint256 i = 0; i < 2000; i++) {
-             // Check digit validity (digits must be 0-4)
-             if (!isValidDigits(candidate)) {
-                 candidate = skipToNextValid(candidate);
-                 continue;
-             }
+            // Check digit validity (digits must be 0-4)
+            if (!isValidDigits(candidate)) {
+                candidate = skipToNextValid(candidate);
+                continue;
+            }
 
-             // Calc Hash
-             bytes32 hash = keccak256(abi.encodePacked(prevHash, address(challenge), candidate));
-             uint256 bal = uint256(hash) % 100 ether;
-             
-             // Check divisibility by 2 (Dungeon value)
-             if (bal % 2 == 0) {
-                 targetInv = candidate;
-                 targetBal = bal;
-                 found = true;
-                 // Generate URI
-                 targetUri = toEncodedString(candidate);
-                 break;
-             }
-             candidate++;
+            // Calc Hash
+            bytes32 hash = keccak256(abi.encodePacked(prevHash, address(challenge), candidate));
+            uint256 bal = uint256(hash) % 100 ether;
+
+            // Check divisibility by 2 (Dungeon value)
+            if (bal % 2 == 0) {
+                targetInv = candidate;
+                targetBal = bal;
+                found = true;
+                // Generate URI
+                targetUri = toEncodedString(candidate);
+                break;
+            }
+            candidate++;
         }
         require(found, "Could not find valid inventory");
-        
+
         console.log("Target URI:", targetUri);
         console.log("Target Inv Value:", targetInv);
         console.log("Target Balance:", targetBal);
 
         // 5. Mint Hero
         uint256 tokenId = hero.mint(targetUri);
-        
+
         // 6. Set Quest
         // We need Quest * Dungeon(2) == TargetBal
         quest.setCurrentQuest(targetBal / 2);
-        
+
         // 7. Burn Gold
         // We need exactly targetBal + 1 ether?
         // Or logic: balanceOf(me) must be even? OR match TargetBal?
@@ -109,20 +109,20 @@ contract SolverS2C12 {
         // `targetBal` < 100 ether.
         // `currentBalance` ~ 1000 ether.
         // So `currentBalance` > `targetBal`.
-        
-        uint256 needed = targetBal + 1 ether; 
+
+        uint256 needed = targetBal + 1 ether;
         if (currentBalance > needed) {
             gold.burn(currentBalance - needed);
         }
-        
+
         // 8. Approve
         // We need allowance to remain equal to targetInv AFTER transferFrom(1 ether) consumes 1 ether.
-        gold.approve(address(challenge), targetInv + 1 ether); 
-        
+        gold.approve(address(challenge), targetInv + 1 ether);
+
         uint256 currentAllowance = gold.allowance(address(this), address(challenge));
         console.log("Current Allowance:", currentAllowance);
         require(currentAllowance == targetInv + 1 ether, "Allowance self-check failed");
-        
+
         // 9. Mint Flag
         challenge.mintFlag(tokenId);
     }
@@ -135,7 +135,7 @@ contract SolverS2C12 {
         }
         return true;
     }
-    
+
     function skipToNextValid(uint256 n) internal pure returns (uint256) {
         // Naive skip: just return n+1 (loop handles check)
         // Optimization: if ends in 5, add 5.
@@ -150,7 +150,7 @@ contract SolverS2C12 {
         bytes memory buffer;
         uint256 temp = n;
         uint256 digits = 0;
-        
+
         // Calculate length (Decimal digits)
         while (temp != 0) {
             digits++;
@@ -169,8 +169,9 @@ contract SolverS2C12 {
     function stringToUint(string memory _s) public pure returns (uint256) {
         bytes memory b = bytes(_s);
         uint256 res = 0;
-        for (uint i = 0; i < b.length; i++) {
-            if (b[i] >= 0x35 && b[i] <= 0x39) { // 0x35='5'
+        for (uint256 i = 0; i < b.length; i++) {
+            if (b[i] >= 0x35 && b[i] <= 0x39) {
+                // 0x35='5'
                 res = res * 10 + (uint256(uint8(b[i])) - 0x35);
             } else {
                 return 0;

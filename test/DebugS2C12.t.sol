@@ -22,13 +22,13 @@ contract DebugS2C12 is Test {
     function testApprove() public {
         address me = address(this);
         uint256 amount = 1 ether;
-        
+
         console.log("Approving...");
         gold.approve(target, amount);
-        
+
         uint256 allo = gold.allowance(me, target);
         console.log("Allowance:", allo);
-        
+
         require(allo == amount, "Allowance failed!");
     }
 }

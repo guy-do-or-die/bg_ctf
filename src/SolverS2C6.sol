@@ -22,7 +22,7 @@ contract SolverS2C6 {
         // After recursion unwinds, points[tx.origin] should be 59.
 
         // Upgrade 5 times
-        for (uint i = 0; i < 5; i++) {
+        for (uint256 i = 0; i < 5; i++) {
             target.upgradeLevel();
         }
 

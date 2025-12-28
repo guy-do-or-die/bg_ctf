@@ -15,10 +15,10 @@ contract SolverS2C8 {
         if (msg.value == 1) {
             revert("lock3: reject 1 wei");
         }
-        
+
         // lock4: require(payable(msg.sender).send(2) == true)
         // challenge sends 2 wei -> we must accept (default)
-        
+
         // Also accept funding (any other amount)
     }
 }

@@ -17,36 +17,36 @@ contract ResearchS2C12 is Script {
 
         console.log("Challenge:", target);
         console.log("NFT Contract:", nftContract);
-        
+
         address goldToken = challenge.challenge12GoldToken();
         console.log("Gold Token:", goldToken);
-        
+
         // Scan for tokens
         // We assume we own some tokens. S2C10 solver found tokens around ID 1500-1600.
         // Let's scan a range.
-        
+
         // Interface for NFT
         IS2NFT nft = IS2NFT(nftContract);
         uint256 balance = nft.balanceOf(msg.sender);
         console.log("My NFT Balance:", balance);
 
-        uint foundC2 = 0;
-        uint foundOther = 0;
+        uint256 foundC2 = 0;
+        uint256 foundOther = 0;
 
         // Naive scan (efficient enough for view script)
-        // Optimization: Use `tokenOfOwnerByIndex` if Enumerable? 
-        // S2NFTFlags inherits ERC721 but maybe not Enumerable? 
+        // Optimization: Use `tokenOfOwnerByIndex` if Enumerable?
+        // S2NFTFlags inherits ERC721 but maybe not Enumerable?
         // Source implies it does NOT inherit Enumerable.
         // So we must scan indices or use known IDs.
         // We solved C2, C3, C4... C11.
         // IDs are sequential.
-        
-        uint counter = nft.tokenIdCounter();
+
+        uint256 counter = nft.tokenIdCounter();
         console.log("Total Tokens:", counter);
-        
-        for (uint i = 1; i <= counter; i++) {
+
+        for (uint256 i = 1; i <= counter; i++) {
             try nft.ownerOf(i) returns (address owner) {
-                uint cId = nft.tokenIdToChallengeId(i);
+                uint256 cId = nft.tokenIdToChallengeId(i);
                 console.log("Token:", i);
                 console.log("Challenge:", cId);
                 console.log("Owner:", owner);
@@ -58,8 +58,8 @@ contract ResearchS2C12 is Script {
 }
 
 interface IS2NFT {
-    function balanceOf(address) external view returns (uint);
-    function ownerOf(uint) external view returns (address);
-    function tokenIdToChallengeId(uint) external view returns (uint);
-    function tokenIdCounter() external view returns (uint);
+    function balanceOf(address) external view returns (uint256);
+    function ownerOf(uint256) external view returns (address);
+    function tokenIdToChallengeId(uint256) external view returns (uint256);
+    function tokenIdCounter() external view returns (uint256);
 }

@@ -6,10 +6,10 @@ library RLPEncoder {
         // Simple wrapper if needed, but we focus on header fields
         return encodeBytes(item);
     }
-    
+
     function encodeList(bytes[] memory items) internal pure returns (bytes memory) {
         bytes memory payload;
-        for (uint i = 0; i < items.length; i++) {
+        for (uint256 i = 0; i < items.length; i++) {
             payload = abi.encodePacked(payload, items[i]);
         }
         return encodeHeader(payload.length, 0xC0, payload);
@@ -23,7 +23,7 @@ library RLPEncoder {
         return encodeBytes(abi.encodePacked(self));
     }
 
-    function encodeUint(uint self) internal pure returns (bytes memory) {
+    function encodeUint(uint256 self) internal pure returns (bytes memory) {
         if (self == 0) {
             return hex"80";
         } else if (self < 0x80) {
@@ -42,7 +42,7 @@ library RLPEncoder {
         }
     }
 
-    function encodeHeader(uint len, uint8 offset, bytes memory data) internal pure returns (bytes memory) {
+    function encodeHeader(uint256 len, uint8 offset, bytes memory data) internal pure returns (bytes memory) {
         if (len < 56) {
             return abi.encodePacked(uint8(offset + len), data);
         } else {
@@ -51,20 +51,20 @@ library RLPEncoder {
         }
     }
 
-    function toBinary(uint x) internal pure returns (bytes memory) {
+    function toBinary(uint256 x) internal pure returns (bytes memory) {
         if (x == 0) {
             return new bytes(0);
         }
         bytes memory b = new bytes(32);
         assembly { mstore(add(b, 32), x) }
-        uint i;
+        uint256 i;
         for (i = 0; i < 32; i++) {
             if (b[i] != 0) {
                 break;
             }
         }
         bytes memory res = new bytes(32 - i);
-        for (uint j = 0; j < res.length; j++) {
+        for (uint256 j = 0; j < res.length; j++) {
             res[j] = b[i + j];
         }
         return res;

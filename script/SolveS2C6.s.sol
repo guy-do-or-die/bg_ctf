@@ -8,14 +8,14 @@ import "../src/SolverS2C6.sol";
 contract SolveS2C6 is Script {
     function run() external {
         address target = 0xd523DfA613b8c5fA352ED02D6cB2fE1ed83901CE;
-        
+
         vm.startBroadcast();
 
         SolverS2C6 solver = new SolverS2C6();
         console.log("Solver deployed at:", address(solver));
-        
+
         solver.solve(target);
-        
+
         vm.stopBroadcast();
     }
 }

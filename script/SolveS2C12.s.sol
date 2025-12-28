@@ -16,7 +16,7 @@ contract SolveS2C12 is Script {
         // uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         // address me = vm.addr(deployerPrivateKey);
         address me = msg.sender;
-        
+
         vm.startBroadcast();
 
         address target = 0xac22A9b80bf87Cdb1f95efEb3F2A504f5039BE9d;
@@ -56,7 +56,7 @@ contract SolveS2C12 is Script {
         if (gold.balanceOf(enemy) < 1 ether) {
             gold.transfer(enemy, 1 ether);
         }
-        
+
         // Remainder to Solver (Balance - 1 ether) (We keep 1 ether? No, we keep 0?)
         // Requirement: Gold.balanceOf(tx.origin) == Gold.balanceOf(~tx.origin)
         // Enemy has 1 ether.
@@ -64,10 +64,10 @@ contract SolveS2C12 is Script {
         // So we transfer (Total - 1) to Solver.
         // Wait, if we keep 1 ether, we have 1. Enemy has 1. Condition met.
         // Solver has the rest.
-        
+
         uint256 toSend = gold.balanceOf(me) - 1 ether;
         gold.transfer(address(solver), toSend);
-        
+
         console.log("My Gold Balance (Final):", gold.balanceOf(me)); // Should be 1 ether
         console.log("Enemy Gold Balance:", gold.balanceOf(enemy)); // Should be 1 ether
         console.log("Solver Gold Balance:", gold.balanceOf(address(solver)));

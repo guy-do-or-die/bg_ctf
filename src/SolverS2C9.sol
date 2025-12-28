@@ -10,9 +10,7 @@ contract SolverS2C9 {
         // Call the challenge
         // We act as the 'sender' here, so the signature must be valid for address(this).
         // Use low-level call to ensure correct selector
-        (bool success, bytes memory ret) = target.call(
-            abi.encodeWithSelector(0x23cfec7e, minterAddress, signature)
-        );
+        (bool success, bytes memory ret) = target.call(abi.encodeWithSelector(0x23cfec7e, minterAddress, signature));
         require(success, string(abi.encodePacked("Call failed: ", ret)));
     }
 }
